@@ -1,0 +1,375 @@
+<div class="toolbardemoBasicUsage">
+    <md-content>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>
+                <span>ZO Agents</span>
+                </h2>
+                <span flex=""></span>
+                <md-progress-circular class="md-warn" md-mode="indeterminate" md-diameter="15" ng-hide="hideSpan"></md-progress-circular>
+                <span flex=""></span>
+                <md-button class="md-raised md-success" aria-label="Favorite" style="margin-right:5px;" ng-click="addAgent($event)" ng-show="isActive('/agent')">
+                    Add Agent
+                </md-button>
+                <md-button class="md-fab" ng-click="logout()">
+                    <md-icon md-svg-src="./assets/img/material-design-icons/svg/exit13.svg"></md-icon>
+                    <md-tooltip>
+                        Logout
+                    </md-tooltip>
+                </md-button>
+            </div>
+        </md-toolbar>
+    </md-content>
+</div>
+<div layout="row" layout-wrap>
+    <div flex="20">
+        <md-card>
+            <md-card-content>
+                <p style="margin:0;">{{agentId}}</p>
+                <p style="margin:0;">Mobile: - {{mobile}}</p>
+                <p style="margin:0;">Email: - {{email}}</p>
+            </md-card-content>
+        </md-card>
+    </div>
+    <div flex>
+        <div>
+            <md-content class="md-padding">
+                <md-tabs md-dynamic-height md-border-bottom>
+                    <md-tab label="booking details">
+                        <md-content layout="column" flex>
+                          <md-card>
+                            <md-data-table-toolbar ng-show="!selected.length">
+                              <h2 class="md-title">Bookings</h2>
+                              <span flex></span>
+                            </md-data-table-toolbar>
+
+                            <md-data-table-toolbar class="alternate" ng-show="selected.length">
+                              <div flex>{{selected.length}} {{selected.length > 1 ? 'items' : 'item'}} selected</div>
+                              <md-icon md-svg-icon="./assets/img/material-design-icons/svg/search100.svg"></md-icon>
+                            </md-data-table-toolbar>
+
+                            <md-data-table-container>
+                              <table md-data-table class="md-primary" md-progress="deferred">
+                                <thead md-order="query.order" md-trigger="onorderchange">
+                                  <tr>
+                                    <th name="Shortcode"></th>
+                                    <th name="Hotel Details"></th>
+                                    <th name="Room Nights"></th>
+                                    <th name="Guests"></th>
+                                    <th name="Amount"></th>
+                                    <th name="Payment Mode"></th>
+                                    <th name="Commission Due"></th>
+                                    <th name="Booking Date"></th>
+                                    <th name="Status"></th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr ng-repeat="booking in bookings | orderBy: query.order | limitTo: query.limit: (query.page - 1) * query.limit">
+                                    <td>{{::booking.shortcode}}</td>
+                                    <td>{{::booking.hotel}}</td>
+                                    <td>{{::booking.roomnights}}</td>
+                                    <td>{{::booking.pax}}</td>
+                                    <td>{{::booking.total_amount}}</td>
+                                    <td>{{::booking.payment_mode}}</td>
+                                    <td>{{::booking.commission}}</td>
+                                    <td>{{::booking.time_create}}</td>
+                                    <td>{{::booking.status}}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </md-data-table-container>
+
+                            <md-data-table-pagination md-limit="query.limit" md-page="query.page" md-total="{{bookings.count}}" md-trigger="onpagechange"></md-data-table-pagination>
+                          </md-card>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="agent details">
+                        <md-content class="md-padding">
+                            <div ng-controller="EditController" layout="column">
+                                <md-content md-theme="docs-dark" layout-padding layout="row" layout-sm="column">
+                                    <md-input-container flex>
+                                        <label>Name</label>
+                                        <input ng-model="user.name" ng-disabled="show" ng-init="show=true">
+                                    </md-input-container>
+                                    <md-input-container flex>
+                                        <label>Email</label>
+                                        <input ng-model="user.email" type="email" ng-disabled="show">
+                                    </md-input-container>
+                                    <md-input-container flex>
+                                        <label>Alt. Email</label>
+                                        <input ng-model="user.alt_email" type="email" ng-disabled="show">
+                                    </md-input-container>
+                                </md-content>
+                                <md-content layout-padding>
+                                    <form name="userForm">
+                                        <div layout layout-sm="column">
+                                            <md-input-container flex>
+                                                <label>Number</label>
+                                                <input ng-model="user.number" ng-disabled="true">
+                                            </md-input-container>
+                                            <md-input-container flex>
+                                                <label>Alt. Number</label>
+                                                <input ng-model="user.alt_number" ng-disabled="show">
+                                            </md-input-container>
+                                            <md-input-container flex>
+                                                <label>Created</label>
+                                                <input type="date" ng-model="user.time_create" ng-disabled="true">
+                                            </md-input-container>
+                                        </div>
+                                        <div layout layout-sm="column">
+                                            <!-- <md-input-container>
+                                                <md-checkbox aria-label="Checkbox 1" ng-disabled="true">
+                                                    Advanced
+                                                </md-checkbox>
+                                            </md-input-container> -->
+                                            <!-- <md-input-container style="width:80%">
+                                                <label>Company</label>
+                                                <input ng-model="user.company" ng-disabled="show">
+                                            </md-input-container> -->
+                                            <md-input-container flex>
+                                                <label>Id Proof Type</label>
+                                                <md-select ng-model="user.id_type" ng-disabled="show">
+                                                    <md-option value="DL">Drivers License</md-option>
+                                                    <md-option value="PASSPORT">Passport</md-option>
+                                                    <md-option value="VOTER ID">Voters Id Card</md-option>
+                                                    <md-option value="AADHAAR">Aadhar Card</md-option>
+                                                    <md-option value="OTHER">Other</md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                        </div>
+                                        <div layout layout-sm="column">
+                                            <md-input-container flex>
+                                                <label>Address</label>
+                                                <input ng-model="user.address" columns="1" ng-disabled="show">
+                                            </md-input-container>
+                                            <md-input-container flex>
+                                                <label>Gender</label>
+                                                <md-select ng-model="user.gender" ng-disabled="show">
+                                                    <md-option value="M">Male</md-option>
+                                                    <md-option value="F">Female</md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                        </div>
+                                        <div layout layout-sm="column">
+                                            <md-input-container flex>
+                                                <label>Date of Birth</label>
+                                                <input type="date" ng-model="user.date_of_birth" ng-disabled="show">
+                                            </md-input-container>
+                                            <md-input-container flex>
+                                                <label>Fathers Name</label>
+                                                <input type="text" ng-model="user.fathers_name" ng-disabled="show">
+                                            </md-input-container>
+                                        </div>
+                                        <div layout layout-sm="column">
+                                            <md-input-container flex>
+                                                <label>State</label>
+                                                <md-select ng-model="states_edit.state_id" ng-disabled="show" ng-change="getCities(states_edit.state_id)">
+                                                    <md-option ng-repeat="state in states_edit" value="{{state.id}}">{{state.name}}</md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                            <md-input-container flex>
+                                                <label>City</label>
+                                                <!-- <md-select ng-model="user.city_id" ng-disabled="show">
+                                                    <md-option ng-repeat="city in cities" value="{{city.id}}">{{city.name}}</md-option>
+                                                </md-select> -->
+                                                <md-select required ng-model="user.city_id" ng-disabled="show">
+                                                    <md-option ng-repeat="city in cities" value="{{city.id}}">{{city.name}}</md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                            <md-input-container flex>
+                                                <label>Locality</label>
+                                                <input ng-model="user.locality" ng-disabled="show">
+                                            </md-input-container>
+                                        </div>
+                                        <div layout layout-sm="column" ng-show="check.desk">
+                                            <md-input-container flex>
+                                                <label>Preferred City (Desk)</label>
+                                                <input ng-model="user.preferred_cities" ng-disabled="show"></input>
+                                            </md-input-container>
+                                            <md-input-container flex>
+                                                <label>Company (Desk)</label>
+                                                <input ng-model="user.company" ng-disabled="show"></input>
+                                            </md-input-container>
+                                        </div>
+                                        <div layout layout-sm="column" ng-show="check.vehicle">
+                                            <md-input-container flex>
+                                                <label>Vehicle Type (Cab)</label>
+                                                <input ng-model="user.vehicle" ng-disabled="show"></input>
+                                            </md-input-container>
+                                            <md-input-container flex>
+                                                <label>Owner</label>
+                                                <input ng-model="user.is_owner_of_vehicle" ng-disabled="show"></input>
+                                            </md-input-container>
+                                            <md-input-container flex>
+                                                <label>Registration Number</label>
+                                                <input ng-model="user.registration_number" ng-disabled="show"></input>
+                                            </md-input-container>
+                                        </div>
+                                        <div layout layout-sm="column" ng-show="check.other">
+                                            <md-input-container flex>
+                                                <label>Profession (Others)</label>
+                                                <input ng-model="user.profession" ng-disabled="show" ng-init=""></input>
+                                            </md-input-container>
+                                            <md-input-container flex>
+                                                <label>Customer Type (Others)</label>
+                                                <input ng-model="user.customer_type" ng-disabled="show" ng-init=""></input>
+                                            </md-input-container>
+                                        </div>
+                                        <div layout layout-sm="column">
+                                            <div flex></div>
+                                            <md-card flex>
+                                              <img ng-src="{{user.id_proof_image}}" class="md-card-image"/>
+                                              <md-card-content>
+                                                <h2 class="md-title">ID Proof Image</h2>
+                                              </md-card-content>
+                                              <md-input-container ng-show="!show">
+                                                ID Proof Image:
+                                                <input type="file" ngf-select ng-model="id_proof_image" name="file" accept="image/*" ngf-max-size="2MB">
+                                                <div>
+                                                    <img ngf-src="!id_proof_image.$error && id_proof_image" class="thumb">
+                                                </div>
+                                                <br>
+                                              </md-input-container>
+                                            </md-card>
+                                            <md-card flex>
+                                              <img ng-src="{{user.id_proof_image_1}}" class="md-card-image"/>
+                                              <md-card-content>
+                                                <h2 class="md-title">ID Proof Image 1</h2>
+                                              </md-card-content>
+                                              <md-input-container ng-show="!show">
+                                                ID Proof Image 1:
+                                                <input type="file" ngf-select ng-model="id_proof_image_1" name="file" accept="image/*" ngf-max-size="2MB">
+                                                <div>
+                                                    <img ngf-src="!id_proof_image_1.$error && id_proof_image_1" class="thumb">
+                                                </div>
+                                                <br>
+                                              </md-input-container>
+                                            </md-card>
+                                            <md-card flex>
+                                              <img ng-src="{{user.id_proof_image_2}}" class="md-card-image"/>
+                                              <md-card-content>
+                                                <h2 class="md-title">ID Proof Image 2</h2>
+                                              </md-card-content>
+                                              <md-input-container ng-show="!show">
+                                                ID Proof Image 2:
+                                                <input type="file" ngf-select ng-model="id_proof_image_2" name="file" accept="image/*" ngf-max-size="2MB">
+                                                <div>
+                                                    <img ngf-src="!id_proof_image_2.$error && id_proof_image_2" class="thumb">
+                                                </div>
+                                                <br>
+                                              </md-input-container>
+                                            </md-card>
+                                            <div flex></div>
+                                        </div>
+                                        <div layout layout-sm="column" ng-show="check.vehicle">
+                                            <div flex></div>
+                                            <md-card flex>
+                                              <img ng-src="{{user.rc_proof_image}}" class="md-card-image"/>
+                                              <md-card-content>
+                                                <h2 class="md-title">RC Proof Image</h2>
+                                              </md-card-content>
+                                              <md-input-container ng-show="!show">
+                                                RC Proof Image:
+                                                <input type="file" ngf-select ng-model="rc_proof_image" name="file" accept="image/*" ngf-max-size="2MB">
+                                                <div>
+                                                    <img ngf-src="!rc_proof_image.$error && rc_proof_image" class="thumb">
+                                                </div>
+                                                <br>
+                                              </md-input-container>
+                                            </md-card>
+                                            <md-card flex>
+                                              <img ng-src="{{user.rc_proof_image_1}}" class="md-card-image"/>
+                                              <md-card-content>
+                                                <h2 class="md-title">RC Proof Image 1</h2>
+                                              </md-card-content>
+                                              <md-input-container ng-show="!show">
+                                                RC Proof Image 1:
+                                                <input type="file" ngf-select ng-model="rc_proof_image_1" name="file" accept="image/*" ngf-max-size="2MB">
+                                                <div>
+                                                    <img ngf-src="!rc_proof_image_1.$error && rc_proof_image_1" class="thumb">
+                                                </div>
+                                                <br>
+                                              </md-input-container>
+                                            </md-card>
+                                            <div flex></div>
+                                        </div>
+                                        <div layout layout-sm="column">
+                                            <md-input-container flex>
+                                                <label>Inductor</label>
+                                                <input ng-model="user.inductor" ng-disabled="true"></input>
+                                            </md-input-container>
+                                            <md-input-container flex>
+                                                <label>City Rep</label>
+                                                <input ng-model="user.city_rep" ng-disabled="true"></input>
+                                            </md-input-container>
+                                        </div>
+                                        <md-button class="md-raised md-success" aria-label="Favorite" style="margin-right:5px;" 
+                                        ng-show="!show" ng-click="submit()">
+                                            Submit
+                                        </md-button>
+                                    </form>
+                                </md-content>
+                                <md-button class="md-accent md-fab md-fab-bottom-right" ng-click="show=!show">
+                                    Edit
+                                </md-button>
+                            </div>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="payment details">
+                        <md-content layout="column" flex>
+                          <md-card>
+                            <md-data-table-toolbar ng-show="!selected.length">
+                              <h2 class="md-title">Payments</h2>
+                              <span flex></span>
+                            </md-data-table-toolbar>
+
+                            <md-data-table-toolbar class="alternate" ng-show="selected.length">
+                              <div flex>{{selected.length}} {{selected.length > 1 ? 'items' : 'item'}} selected</div>
+                              <md-icon md-svg-icon="./assets/img/material-design-icons/svg/search100.svg"></md-icon>
+                            </md-data-table-toolbar>
+
+                            <md-data-table-container>
+                              <table md-data-table class="md-primary" md-progress="deferred">
+                                <thead md-order="query.order" md-trigger="onorderchange">
+                                  <tr>
+                                    <th name="Transaction Id"></th>
+                                    <th name="Transaction Type"></th>
+                                    <th name="Balance"></th>
+                                    <th name="Response Code"></th>
+                                    <th name="Status"></th>
+                                    <th name="Organization Balance"></th>
+                                    <th name="Request Failed"></th>
+                                    <th name="Request Started"></th>
+                                    <th name="Request Completed"></th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr ng-repeat="payment in payment_details | orderBy: query.order | limitTo: query.limit: (query.page - 1) * query.limit">
+                                    <td>{{::payment.tax_id}}</td>
+                                    <td>{{::payment.type}}</td>
+                                    <td>{{::payment.card_balance}}</td>
+                                    <td>{{::payment.res_code}}</td>
+                                    <td>{{::payment.status}}</td>
+                                    <td>{{::payment.org_balance}}</td>
+                                    <td>{{::payment.request_failed}}</td>
+                                    <td>{{::payment.request_started}}</td>
+                                    <td>{{::payment.request_completed}}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </md-data-table-container>
+
+                            <md-data-table-pagination md-limit="query.limit" md-page="query.page" md-total="{{payment_details.count}}" md-trigger="onpagechange"></md-data-table-pagination>
+                          </md-card>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="analytics">
+                        <md-content class="md-padding">
+                            We will have analytics stuff here. Work In Progress.
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+    </div>
+</div>

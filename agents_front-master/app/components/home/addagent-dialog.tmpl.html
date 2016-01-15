@@ -1,0 +1,303 @@
+<md-dialog flex="33">
+    <form name="addagent_form">
+        <md-dialog-content style="padding:0;">
+            <md-content>
+                <md-tabs class="md-accent" md-selected="data.selectedIndex" md-align-tabs="{{data.bottom}}" md-no-ink="false" md-no-bar="false" md-dynamic-height md-stretch-tabs="always">
+                    <md-tab id="tab1">
+                        <md-tab-label>1</md-tab-label>
+                        <md-tab-body>
+                            <div layout="row">
+                                <div flex></div>
+                                <div style="text-align: left;">
+                                    <p>Basic Info *</p>
+                                    <md-radio-group ng-model="agent.type" required ng-change="value(agent.type)">
+                                        <md-radio-button value="VEHICLE" class="md-primary" required>Cab Agent</md-radio-button>
+                                        <md-radio-button value="DESK" required>Travel Agent</md-radio-button>
+                                        <md-radio-button value="OTHER" required>Other</md-radio-button>
+                                    </md-radio-group>
+                                </div>
+                                <div flex></div>
+                            </div>
+                        </md-tab-body>
+                    </md-tab>
+                    <md-tab id="tab2">
+                        <md-tab-label>2</md-tab-label>
+                        <md-tab-body>
+                            <br>
+                            <div layout="row">
+                                <div flex></div>
+                                <div style="text-align: left;">
+                                    <label>Group * :</label>
+                                    <md-radio-group ng-model="agent.group" required ng-change="gds(agent.group)">
+                                        <md-radio-button value="GDS-Corporate" class="md-primary">GDS - Corporate</md-radio-button>
+                                        <md-radio-button value="GDS-Solo">GDS - Solo</md-radio-button>
+                                        <md-radio-button value="GDS-Markup">GDS - Markup</md-radio-button>
+                                    </md-radio-group>
+                                </div>
+                                <div flex></div>
+                            </div>
+                        </md-tab-body>
+                    </md-tab>
+                    <md-tab id="tab3">
+                        <md-tab-label>3</md-tab-label>
+                        <md-tab-body>
+                            <div layout="column" style="margin-left: 120px;">
+                                <!-- <div layout="row"> -->
+                                    <div layout="row">
+                                        <md-input-container>
+                                            <label>Name</label>
+                                            <input type="text" ng-model="agent.name" required>
+                                        </md-input-container>
+                                        <md-input-container>
+                                            <label>Gender</label>
+                                            <md-select required ng-model="agent.gender">
+                                                <md-option value="M">Male</md-option>
+                                                <md-option value="F">Female</md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row">
+                                        <md-input-container md-no-float>
+                                            <label>Phone</label>
+                                            <input ng-model="agent.mobile" type="text" required name="phone">
+                                            <div ng-messages="addagent_form.phone.$error">
+                                                <div ng-message="required">This is required.</div>
+                                            </div>
+                                        </md-input-container>
+                                        <md-input-container ng-hide="lock">
+                                            <label>Card Kit Id</label>
+                                            <input type="text" ng-model="agent.cardkit" ng-required="!lock">
+                                        </md-input-container>
+                                    </div>
+                                    <div layout="row">
+                                        <md-input-container md-no-float>
+                                            <label>Password</label>
+                                            <input ng-model="agent.password" type="password" required>
+                                        </md-input-container>
+                                        <md-input-container>
+                                            <label>Re - enter Password</label>
+                                            <input type="password" ng-model="agent.password1" required>
+                                        </md-input-container>
+                                    </div>
+                                <!-- </div> -->
+                            </div>
+                        </md-tab-body>
+                    </md-tab>
+                    <md-tab id="tab4">
+                        <md-tab-label>4</md-tab-label>
+                        <md-tab-body>
+                            <div layout="column" style="margin-left: 120px;">
+                                <div layout="row">
+                                    <md-input-container>
+                                        <label>E-mail</label>
+                                        <input type="text" ng-model="agent.email">
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label>State</label>
+                                        <md-select required ng-model="agent.state_id" ng-change="getCities(agent.state_id)">
+                                            <md-option ng-repeat="state in states" value="{{state.id}}">{{state.name}}</md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                    <md-input-container ng-hide="agent.state_id==null">
+                                        <label>Cities</label>
+                                        <md-select required ng-model="agent.city_id">
+                                            <md-option ng-repeat="city in cities" value="{{city.id}}">{{city.name}}</md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                </div>
+                                <div layout="row">
+                                    <md-input-container md-no-float>
+                                        <label>Locality</label>
+                                        <input ng-model="agent.locality" type="text">
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label>Address</label>
+                                        <input type="text" ng-model="agent.address">
+                                    </md-input-container>
+                                </div>
+                                <div layout="row" ng-hide="lock">
+                                    <md-input-container md-no-float>
+                                        <label>ID Proof No.</label>
+                                        <input ng-model="agent.id_number" type="text" ng-required="!lock">
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label>ID Type</label>
+                                        <md-select ng-required="!lock" ng-model="agent.id_type">
+                                            <md-option value="DL">Drivers License</md-option>
+                                            <md-option value="PASSPORT">Passport</md-option>
+                                            <md-option value="VOTER ID">Voter ID</md-option>
+                                            <md-option value="AADHAAR">Aadhaar</md-option>
+                                            <md-option value="OTHER">Other</md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                </div>
+                                <div layout="row">
+                                    <md-input-container>
+                                        <label>Company</label>
+                                        <input type="text" ng-model="agent.company">
+                                    </md-input-container>
+                                </div>
+                            </div>
+                        </md-tab-body>
+                    </md-tab>
+                    <md-tab id="tab5" ng-disabled="lock">
+                        <md-tab-label>5</md-tab-label>
+                        <md-tab-body>
+                            <div layout="column" style="margin-left: 230px;">
+                                <md-input-container>
+                                    ID Proof Image 1:
+                                    <input type="file" ngf-select ng-model="agent.id_proof_image" name="file" accept="image/*" ngf-max-size="2MB">
+                                    <div style="width:30%; height:30%;">
+                                        <img ng-show="addagent_form.file.$valid" ngf-src="!agent.id_proof_image.$error && agent.id_proof_image" class="thumb">
+                                    </div>
+                                    <br>
+                                </md-input-container>
+                                <md-input-container>
+                                    ID Proof Image 2:
+                                    <input type="file" ngf-select ng-model="agent.id_proof_image_1" name="file1" accept="image/*" ngf-max-size="2MB">
+                                    <div style="width:30%; height:30%;">
+                                        <img ng-show="addagent_form.file1.$valid" ngf-src="!agent.id_proof_image_1.$error && agent.id_proof_image_1" class="thumb">
+                                    </div>
+                                    <br>
+                                </md-input-container>
+                                <md-input-container>
+                                    ID Proof Image 3:
+                                    <input type="file" ngf-select ng-model="agent.id_proof_image_2" name="file2" accept="image/*" ngf-max-size="2MB">
+                                    <div style="width:30%; height:30%;">
+                                        <img ng-show="addagent_form.file2.$valid" ngf-src="!agent.id_proof_image_2.$error && agent.id_proof_image_2" class="thumb">
+                                    </div>
+                                    <br>
+                                </md-input-container>
+                            </div>
+                            <div ng-show="happay">
+                                <div layout="row" style="margin-left:230px;">
+                                    <md-input-container>
+                                        <label>Bank Name</label>
+                                        <input type="text" ng-model="agent.bank_name">
+                                    </md-input-container>
+                                </div>
+                                <div layout="row" style="margin-left: 230px;">
+                                    <md-input-container md-no-float>
+                                        <label>Bank Branch</label>
+                                        <input ng-model="agent.bank_branch" type="text">
+                                    </md-input-container>
+                                </div>
+                                <div layout="row" style="margin-left: 230px;">
+                                    <md-input-container md-no-float>
+                                        <label>IFSC Code</label>
+                                        <input ng-model="agent.ifsc" type="text">
+                                    </md-input-container>
+                                </div>
+                                <div layout="row" style="margin-left: 230px;">
+                                    <md-input-container md-no-float>
+                                        <label>Account Number</label>
+                                        <input ng-model="agent.ac_number" type="text">
+                                    </md-input-container>
+                                </div>
+                            </div>
+                        </md-tab-body>
+                    </md-tab>
+                    <md-tab id="tab6" ng-disabled="lock">
+                        <md-tab-label>6</md-tab-label>
+                        <md-tab-body>
+                            <div ng-show="vehicle">
+                                <div layout="row" style="margin-left:230px;">
+                                    <md-input-container>
+                                        <label>Vehicle Type</label>
+                                        <input type="text" ng-model="agent.vehicle_type">
+                                    </md-input-container>
+                                </div>
+                                <div layout="row" style="margin-left: 230px;">
+                                    <md-input-container md-no-float>
+                                        <md-checkbox ng-model="agent.owner">Owner</md-checkbox>
+                                    </md-input-container>
+                                </div>
+                                <div layout="row" style="margin-left: 230px;">
+                                    <md-input-container md-no-float>
+                                        <label>Registration Number</label>
+                                        <input ng-model="agent.registration" type="text">
+                                    </md-input-container>
+                                </div>
+                                <div layout="row" style="margin-left: 230px;">
+                                    <md-input-container md-no-float>
+                                        RC Proof Image:
+                                        <input type="file" ngf-select ng-model="agent.rc_proof_image" name="file3" accept="image/*" ngf-max-size="2MB">
+                                        <div style="width:30%; height:30%;">
+                                            <img ng-show="addagent_form.file3.$valid" ngf-src="!agent.rc_proof_image.$error && agent.rc_proof_image" class="thumb">
+                                        </div>
+                                        <br>
+                                    </md-input-container>
+                                </div>
+                                <div layout="row" style="margin-left: 230px;">
+                                    <md-input-container md-no-float>
+                                        RC Proof Image 1:
+                                        <input type="file" ngf-select ng-model="agent.rc_proof_image_1" name="file4" accept="image/*" ngf-max-size="2MB">
+                                        <div style="width:30%; height:30%;">
+                                            <img ng-show="addagent_form.file4.$valid" ngf-src="!agent.rc_proof_image_1.$error && agent.rc_proof_image_1" class="thumb">
+                                        </div>
+                                        <br>
+                                    </md-input-container>
+                                </div>
+                            </div>
+                            <div ng-show="desk">
+                                <div layout="row" style="margin-left:230px;">
+                                    <md-input-container>
+                                        <label>Preferred Cities</label>
+                                        <input type="text" ng-model="agent.preferred_cities">
+                                    </md-input-container>
+                                </div>
+                            </div>
+                            <div ng-show="other">
+                                <div layout="row" style="margin-left:230px;">
+                                    <md-input-container>
+                                        <label>Profession</label>
+                                        <input type="text" ng-model="agent.profession">
+                                    </md-input-container>
+                                </div>
+                                <div layout="row" style="margin-left: 230px;">
+                                    <md-input-container md-no-float>
+                                        <label>Customer Type</label>
+                                        <input ng-model="agent.customer_type" type="text">
+                                    </md-input-container>
+                                </div>
+                            </div>
+                        </md-tab-body>
+                    </md-tab>
+                    <md-tab id="tab7" ng-disabled="lock">
+                        <md-tab-label>7</md-tab-label>
+                        <md-tab-body>
+                            <div layout="row" style="margin-left: 230px;">
+                                <md-input-container md-no-float>
+                                    <label>Date Of Birth</label>
+                                    <input ng-model="agent.date_of_birth" type="date">
+                                </md-input-container>
+                            </div>
+                            <div layout="row" style="margin-left: 230px;">
+                                <md-input-container md-no-float>
+                                    <label>Fathers Name</label>
+                                    <input ng-model="agent.father" type="text">
+                                </md-input-container>
+                            </div>
+                            <div layout="row" style="margin-left: 230px;">
+                                <md-input-container md-no-float>
+                                    <label>Inductor</label>
+                                    <input ng-model="agent.inductor" type="text">
+                                </md-input-container>
+                            </div>
+                        </md-tab-body>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </md-dialog-content>
+
+        <div class="md-actions" layout="row">
+            <span flex></span>
+            <md-button ng-click="answer('Cancel')">
+                Cancel
+            </md-button>
+            <md-button ng-click="answer('Submit', agent.id_proof_image)" style="margin-right:20px;" ng-disabled="addagent_form.$invalid">
+                Submit
+            </md-button>
+        </div>
+    </form>
+</md-dialog>

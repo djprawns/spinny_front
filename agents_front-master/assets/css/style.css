@@ -1,0 +1,26 @@
+/*md-tabs[md-no-bar] md-ink-bar {
+    display: none;
+}*/
+
+md-data-table-toolbar > form {
+    margin-left: 16px;
+}
+
+md-data-table-toolbar > form > input {
+    width: 100%;
+    margin: 0;
+    border: none;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+md-data-table-toolbar > form > input:focus {
+    outline: none;
+}
+
+.thumb {
+    width: 150px;
+    height: 150px;
+    float: none;
+    position: relative;
+    top: 7px;
+}

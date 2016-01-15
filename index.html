@@ -1,0 +1,120 @@
+<html ng-app="spinnyApp">
+
+<head>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.11.2/angular-material.min.css">
+    <link href="material-design-responsive-table/css/normalize.css" rel="stylesheet" type="text/css" />
+    <link href="material-design-responsive-table/css/style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body ng-controller="RootController">
+    <md-toolbar md-medium-tall>
+        <div class="md-toolbar-tools" md-padding>
+            <img src="images/spinny-logo.png" />
+            <span flex></span>
+            <!-- <md-button class="md-raised" style="color: black;">
+                Logout
+            </md-button> -->
+        </div>
+    </md-toolbar>
+    <div id="demo">
+        <h1>Spinny Dashboard</h1>
+        <h2>v 1.0</h2>
+        <div class="table-responsive-vertical shadow-z-1">
+            <table id="table" class="table table-hover table-mc-light-blue">
+                <thead>
+                    <tr>
+                        <th colspan="4">
+                            <md-input-container>
+                                <label>Search</label>
+                                <input ng-model="user.title">
+                            </md-input-container>
+                        </th>
+                        <th colspan="1">
+                            <md-select name="myModel" ng-model="myModel" ng-change="search(myModel)">
+                                <md-option value="10000">10000</md-option>
+                                <md-option value="20000">20000</md-option>
+                                <md-option value="30000">30000</md-option>
+                                <md-option value="40000">40000</md-option>
+                                <md-option value="50000">50000</md-option>
+                                <md-option value="800000">800000</md-option>
+                            </md-select>
+                        </th>
+                        <th colspan="1" style="padding-bottom: 33px;">
+                            <md-button ng-click="clearValue()" ng-disabled="!myModel">Clear</md-button>
+                        </th>
+                    </tr>
+                </thead>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Image</th>
+                        <th>Inventory</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in items | filter: user.title">
+                        <td>
+                            <md-checkbox ng-checked="exists(item, selected)" ng-click="toggle(item, selected)">
+                            </md-checkbox>
+                        </td>
+                        <td data-title="ID" id="padding">{{item.id}}</td>
+                        <td data-title="Name" id="padding">{{item.name}}</td>
+                        <td data-title="Price" id="padding">Rs. {{item.price}}</td>
+                        <td data-title="Link" id="padding">
+                            <a href="http://{{item.image_url}}" target="_blank">{{item.image_url}}</a>
+                        </td>
+                        <td data-title="Inventory" id="padding">{{item.inventory_count}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- {{selected}} -->
+        </div>
+    </div>
+    </div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-animate.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-aria.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angular_material/0.11.2/angular-material.min.js"></script>
+<script src="angular-route.js"></script>
+<script src="app.js"></script>
+<!-- <script type="app.route.js"></script> -->
+<script src="config.js"></script>
+<script src="SharedComponents/SharedDataService.js"></script>
+<script type="text/javascript">
+    spinnyApp.controller('RootController', function($scope, $http, SharedDataService) {
+        SharedDataService.getCars().then(function(response) {
+            $scope.items = response;
+        });
+
+        $scope.selected = [];
+
+        $scope.toggle = function(item, list) {
+            var idx = list.indexOf(item);
+            if (idx > -1) list.splice(idx, 1);
+            else list.push(item);
+        };
+
+        $scope.exists = function(item, list) {
+            return list.indexOf(item) > -1;
+        };
+
+        $scope.clearValue = function() {
+            $scope.myModel = undefined;
+            $http.get("http://localhost:8000/polls/cars/").then(function(response) {
+                $scope.items = response.data.cars;
+            });
+        };
+
+        $scope.search = function(value) {
+            SharedDataService.searchCars(value).then(function(response) {
+                $scope.items = response;
+            });
+        }
+    });
+</script>
+
+</html>

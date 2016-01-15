@@ -1,0 +1,522 @@
+<div class="toolbardemoBasicUsage">
+    <md-content>
+        <div layout="column">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <!-- <md-button class="md-icon-button" aria-label="Settings">
+                        <md-icon md-svg-icon="./assets/svg/menu.svg"></md-icon>
+                    </md-button> -->
+                <h2>
+                    <span>ZO Agents</span>
+                    </h2>
+                <span flex=""></span>
+                
+                <span flex=""></span>
+                <md-button class="md-raised md-success" aria-label="Favorite" style="margin-right:5px;" ng-click="addAgent($event)" ng-show="isActive('/agent')">
+                    Add Agent
+                </md-button>
+                <md-button class="md-fab" ng-click="logout()">
+                    <md-icon md-svg-src="./assets/img/material-design-icons/svg/exit13.svg"></md-icon>
+                    <md-tooltip>
+                        Logout
+                    </md-tooltip>
+                </md-button>
+            </div>
+            
+        </md-toolbar>
+        </div>
+    </md-content>
+    <md-progress-linear md-mode="indeterminate" class="md-warn" ng-hide="hideSpan"></md-progress-linear>
+</div>
+
+<md-tabs md-dynamic-height md-border-bottom md-no-ink md-no-bar>
+<!-- <md-progress-circular class="md-warn" md-mode="indeterminate" md-diameter="15"></md-progress-circular> -->
+    <md-tab label="agent details">
+        <div id="demo">
+            <md-content layout="column" flex>
+                <md-card>
+                    <!-- <md-data-table-toolbar ng-hide="selected.length || filter.show">
+                        <h2 class="md-title">Agents</h2>
+                        <span flex></span>
+                        <md-button class="md-icon-button" ng-click="filter.show = true">
+                            <md-icon md-svg-icon="./assets/img/material-design-icons/svg/filter20.svg"></md-icon>
+                            <md-tooltip>
+                                Search
+                            </md-tooltip>
+                        </md-button>
+                    </md-data-table-toolbar> -->
+                    <br>
+
+                    <md-data-table-toolbar>
+                        <md-icon md-svg-icon="./assets/img/material-design-icons/svg/search100.svg"></md-icon>
+                        <form flex>
+                            <md-input-container>
+                                <label>Search</label>
+                                <input type="text" placeholder="search" ng-model="searchtext.query" ng-enter="searchAgents()">
+                            </md-input-container>
+                        </form>
+                        <md-button class="md-raised md-success" aria-label="Favorite" style="margin-right:5px;" ng-click="searchAgents()">
+                            Search
+                        </md-button>
+                        <md-button class="md-icon-button" ng-click="filter.show = false; clearText()">
+                            <md-icon md-svg-icon="./assets/img/material-design-icons/svg/clear5.svg"></md-icon>
+                            <md-tooltip>
+                                Close
+                            </md-tooltip>
+                        </md-button>
+<!--
+                        <md-input-container>
+                            <label>Cities</label>
+                            <md-select required ng-model="selected_city" ng-change="selectedCity(selected_city)" ng-if='recreateSelect'>
+                                <md-option ng-repeat="city in cities" value="{{city.city}}">{{city.city}}</md-option>
+                            </md-select>
+                        </md-input-container>
+-->
+                        <md-button class="md-icon-button" ng-click="clearDropdown()">
+                            <md-icon md-svg-icon="./assets/img/material-design-icons/svg/clear5.svg"></md-icon>
+                            <md-tooltip>
+                                Close
+                            </md-tooltip>
+                        </md-button>
+                    </md-data-table-toolbar>
+
+                    <md-data-table-container>
+                        <table md-data-table class="md-primary" md-progress="deferred">
+                            <thead md-order="query.order" md-page="query.page" md-trigger="onorderchange">
+                                <tr>
+                                    <th name="Name" order-by="name"></th>
+                                    <th name="Credits" order-by="zo_credits"></th>
+                                    <th name="Phone"></th>
+                                    <th name="Roomnights" order-by="total_roomnights"></th>
+                                    <th name="City"></th>
+                                    <th name="Company"></th>
+                                    <th name="Archive"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="agent in agents">
+                                    <td><a href="#/agent/{{agent.agent_id}}">{{agent.name}}</a></td>
+                                    <td>{{agent.zo_credits}}</td>
+                                    <td>{{agent.agent}}</td>
+                                    <td>{{agent.total_roomnights}}</td>
+                                    <td>{{agent.city}}</td>
+                                    <td>{{agent.company}}</td>
+                                    <td>
+                                        <md-button class="md-raised md-primary" ng-click="showConfirm($event, agent)" style="font-size: 10px; width: 30%;">Archive</md-button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </md-data-table-container>
+
+                    <md-data-table-pagination md-limit="query.limit" md-page="query.page" md-total="{{agents.count}}" md-trigger="onpagechange"></md-data-table-pagination>
+                </md-card>
+            </md-content>
+        </div>
+    </md-tab>
+    <md-tab label="all bookings">
+        <md-content layout="column" flex>
+            <md-card>
+                <md-data-table-toolbar ng-show="!selected.length">
+                    <h2 class="md-title">Bookings</h2>
+                    <span flex></span>
+                </md-data-table-toolbar>
+
+                <md-data-table-toolbar class="alternate" ng-show="selected.length">
+                    <div flex>{{selected.length}} {{selected.length > 1 ? 'items' : 'item'}} selected</div>
+                    <md-icon md-svg-icon="./assets/img/material-design-icons/svg/search100.svg"></md-icon>
+                </md-data-table-toolbar>
+
+                <md-data-table-container>
+                    <table md-data-table class="md-primary" md-progress="deferred">
+                        <thead md-order="quer.order" md-trigger="onorderchange_booking">
+                            <tr>
+                                <th name="Shortcode"></th>
+                                <th name="Hotel Details"></th>
+                                <th name="Room Nights" order-by="roomnights"></th>
+                                <th name="Guests" order-by="pax"></th>
+                                <th name="Amount" order-by="total_amount"></th>
+                                <th name="Payment Mode"></th>
+                                <th name="Commission Due" order-by="commission"></th>
+                                <th name="Booking Date"></th>
+                                <th name="Status"></th>
+                                <th name="Agent"></th>
+                                <th name="Company"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="booking in all_bookings">
+                                <td>{{::booking.shortcode}}</td>
+                                <td>{{::booking.hotel}}</td>
+                                <td>{{::booking.roomnights}}</td>
+                                <td>{{::booking.pax}}</td>
+                                <td>{{::booking.total_amount}}</td>
+                                <td>{{::booking.payment_mode}}</td>
+                                <td>{{::booking.commission}}</td>
+                                <td>{{::booking.time_create}}</td>
+                                <td>{{::booking.status}}</td>
+                                <!-- <td>{{::booking.agent}}</td> -->
+                                <td><a href="#/agent/{{booking.agent_id}}">{{booking.agent_name}}</a></td>
+                                <td>{{::booking.company}}</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </md-data-table-container>
+
+                <md-data-table-pagination md-limit="quer.limit" md-page="quer.page" md-total="{{all_bookings.count}}" md-trigger="onpagechange_booking"></md-data-table-pagination>
+            </md-card>
+        </md-content>
+    </md-tab>
+    <md-tab label="Archived">
+        <div id="demo">
+            <md-content layout="column" flex>
+                <md-card>
+                    <md-data-table-toolbar>
+                        <h2 class="md-title">Archived Agents</h2>
+                        <span flex></span>
+                    </md-data-table-toolbar>
+
+                    <md-data-table-container>
+                        <table md-data-table class="md-primary">
+                            <thead md-order="que.order">
+                                <tr>
+                                    <th name="Name" order-by="name"></th>
+                                    <th name="Credits" order-by="zo_credits"></th>
+                                    <th name="Phone"></th>
+                                    <th name="Roomnights" order-by="total_roomnights"></th>
+                                    <th name="City"></th>
+                                    <th name="Activate"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="archive in archived">
+                                    <td>{{archive.name}}</a></td>
+                                    <td>{{archive.zo_credits}}</td>
+                                    <td>{{archive.agent}}</td>
+                                    <td>{{archive.total_roomnights}}</td>
+                                    <td>{{archive.city}}</td>
+                                    <td>
+                                        <md-button class="md-raised md-primary" ng-click="showConfirmActivate($event, archive)" style="font-size: 10px; width: 30%;">Activate</md-button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </md-data-table-container>
+
+                    <md-data-table-pagination md-total="{{archived.count}}"></md-data-table-pagination>
+                </md-card>
+            </md-content>
+        </div>
+    </md-tab>
+    <md-tab label="generate coupon">
+        <md-content class="md-padding" layout="row" layout-align="space-around center">
+            <div ></div>
+            <div>
+                <div layout="row">
+                    <md-card class="md-padding" style="width: 300px;">
+                        <div layout="column">
+                            <div></div>
+                            <div>
+                                <md-input-container class="md-icon-float md-icon-right">
+                                  <label>Coupon Amount</label>
+                                  <md-icon md-svg-src="img/icons/ic_card_giftcard_24px.svg"></md-icon>
+                                  <input ng-model="coupon.amount" type="number" step="50">
+                                  <md-icon md-svg-src="img/icons/ic_euro_24px.svg"></md-icon>
+                                </md-input-container>
+                                <md-input-container class="md-icon-float md-icon-right">
+                                  <label>No. of Coupons</label>
+                                  <md-icon md-svg-src="img/icons/ic_card_giftcard_24px.svg"></md-icon>
+                                  <input ng-model="coupon.number" type="number" step="1">
+                                  <md-icon md-svg-src="img/icons/ic_euro_24px.svg"></md-icon>
+                                </md-input-container>
+                                <div layout="row">
+                                    <div flex></div>
+                                    <md-button class="md-raised md-success" aria-label="Favorite" ng-click="generateCoupon()">
+                                        Generate Coupon
+                                    </md-button>
+                                    <div flex></div>
+                                </div>
+                                <md-card ng-repeat="code in generatedCoupon" class="md-padding" style="text-align:center;">
+                                    {{code}}
+                                </md-card>
+                            </div>
+                            <div></div>
+                        </div>
+                    </md-card>
+                </div>
+            </div>
+            <div></div>
+        </md-content>
+    </md-tab>
+    <md-tab label="analytics">
+        <div id="demo">
+            <md-content layout="column" flex>
+                <md-card>
+                    <md-data-table-toolbar>
+                        <h2 class="md-title">Select Mode</h2>
+                        <span flex></span>
+                    </md-data-table-toolbar>
+                    <md-data-table-toolbar>
+                        <div layout="row">
+                            <p>Analytics Mode</p>
+                            <md-switch ng-model="analyticsMode" aria-label="Comparison Mode">
+                            </md-switch>
+                            <p>Comparison Mode</p>
+                        </div>
+                    </md-data-table-toolbar>
+                </md-card>
+            </md-content>
+        </div>
+        <div id="demo" ng-show="analyticsMode">
+            <md-content>
+                <md-card layout="column" flex>
+                    <md-data-table-toolbar>
+                        <h2 class="md-title">Select Dates</h2>
+                        <span flex></span>
+                    </md-data-table-toolbar>
+                    <div layout="row">
+                        <md-datepicker ng-model="analyticsComparisonStartDate" md-placeholder="Start date">
+                        </md-datepicker>
+                        <md-datepicker ng-model="analyticsComparisonEndDate" md-placeholder="End date">
+                        </md-datepicker>
+                        <md-button class="md-raised md-primary" ng-click="compare()" style="font-size: 10px; width:                                    30%;">Compare</md-button>
+                    </div>
+                    <md-data-table-container name="Summary">
+                        <table md-data-table class="md-primary">
+                            <thead>
+                                <tr>
+                                    <th name="Portal Roomnights">
+                                    <th name="Non Portal Roomnights"></th>
+                                    <th name="Total"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{analytics.comparison.portal_bookings}}</td>
+                                    <td>{{analytics.comparison.non_portal_bookings}}</td>
+                                    <td><b>{{analytics.comparison.total_bookings}}</b></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </md-data-table-container>
+                </md-card>
+                <md-card layout="column" flex>
+                    <canvas id="line" class="chart chart-line" chart-data="chart.data"
+                      chart-labels="chart.labels" chart-legend="true" chart-series="chart.series"
+                      chart-click="onClick" >
+                    </canvas> 
+                </md-card>
+            </md-content>    
+        </div>
+        <div id="demo" ng-hide="analyticsMode">
+            <md-content layout="column" flex>
+                <md-card>
+                    <md-data-table-toolbar>
+                        <h2 class="md-title">Summary</h2>
+                        <span flex></span>
+                    </md-data-table-toolbar>
+                    
+                    <md-datepicker ng-model="analyticsDate" md-placeholder="Enter date">
+                    </md-datepicker>
+                    <md-data-table-toolbar>
+                        <h4 class="md-title">Portal Bookings</h4>
+                        <span flex></span>
+                    </md-data-table-toolbar>
+                    <md-data-table-container name="Summary">
+                        <table md-data-table class="md-primary">
+                            <thead>
+                                <tr>
+                                    <th name="Bookings">
+                                    <th name="Roomnights"></th>
+                                    <th name="Credits Used"></th>
+                                    <th name="Payment made"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{analytics.bookings_count}}</td>
+                                    <td>{{analytics.room_nights}}</td>
+                                    <td>{{analytics.credits}}</td>
+                                    <td>{{analytics.total_volume}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </md-data-table-container>
+                    
+                    <md-data-table-toolbar>
+                        <h4 class="md-title">Non-Portal Bookings</h4>
+                        <span flex></span>
+                    </md-data-table-toolbar>
+                    <md-data-table-container name="Summary">
+                        <table md-data-table class="md-primary">
+                            <thead>
+                                <tr>
+                                    <th name="Bookings">
+                                    <th name="Roomnights"></th>
+                                    <th name="Payment made (the paid amount.. PAH is not considered)"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{analytics.non_portal_bookings.length}}</td>
+                                    <td>{{analytics.room_nights_sold}}</td>
+                                    <td>{{analytics.non_portal_paid }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </md-data-table-container>
+                </md-card>
+                <md-card>
+                    <md-data-table-toolbar>
+                        <h2 class="md-title">Bookings (Portal)</h2>
+                        <span flex></span>
+                    </md-data-table-toolbar>
+                    <md-data-table-container name="Bookings">
+                        <table md-data-table class="md-primary" name="Bookings">
+                            <thead>
+                                <tr>
+                                    <th name="Booking ID"></th>
+                                    <th name="Hotel"></th>
+                                    <th name="Booked From"></th>
+                                    <th name="Booked To"></th>
+                                    <th name="Rooms"></th>
+                                    <th name="Paid"></th>
+                                    <th name="Status"></th>
+                                    <th name="View Agent"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="booking in analytics.bookings">
+                                    <td>{{booking.shortcode}}</a></td>
+                                    <td>{{booking.hotel__alt_name}} ({{booking.hotel__city__name}})</td>
+                                    <td>{{booking.booked_from}}</td>
+                                    <td>{{booking.booked_to}}</td>
+                                    <td>{{booking.total_rooms}}</td>
+                                    <td>{{booking.paid}}</td>
+                                    <td>{{booking.status}}</td>
+<!--                                    <td><a href="#/agent/{{booking.agent_id}}" target="_blank">View Agent</a></td>-->
+                                    <td><a href="#/agent/{{booking.agent_id}}" target="_blank">View Agent (from {{booking.agent_city}})</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </md-data-table-container>
+                </md-card>
+                <md-card>
+                    <md-data-table-toolbar>
+                        <h2 class="md-title">Bookings (Non Portal)</h2>
+                        <span flex></span>
+                    </md-data-table-toolbar>
+                    <md-data-table-container name="Bookings">
+                        <table md-data-table class="md-primary" name="Bookings">
+                            <thead>
+                                <tr>
+                                    <th name="Booking ID"></th>
+                                    <th name="Hotel"></th>
+                                    <th name="Booked From"></th>
+                                    <th name="Booked To"></th>
+                                    <th name="Rooms"></th>
+                                    <th name="Paid"></th>
+                                    <th name="Remaining"></th>
+                                    <th name="Status"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="booking in analytics.non_portal_bookings">
+                                    <td>{{booking.shortcode}}</a></td>
+                                    <td>{{booking.hotel__alt_name}} ({{booking.hotel__city__name}})</td>
+                                    <td>{{booking.booked_from}}</td>
+                                    <td>{{booking.booked_to}}</td>
+                                    <td>{{booking.total_rooms}}</td>
+                                    <td>{{booking.paid}}</td>
+                                    <td>{{booking.remaining}}</td>
+                                    <td>{{booking.status}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </md-data-table-container>
+                </md-card>
+                <md-card>
+                    <md-data-table-toolbar>
+                        <h2 class="md-title">Payments</h2>
+                        <span flex></span>
+                    </md-data-table-toolbar>
+                    <md-data-table-container name="Payments">
+                        <table md-data-table class="md-primary" name="Payments">
+                            <thead>
+                                <tr>
+                                    <th name="Payment ID"></th>
+                                    <th name="Gateway"></th>
+                                    <th name="Agent Phone"></th>
+                                    <th name="Amount"></th>
+                                    <th name="Status"></th>
+                                    <th name="Message"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="txn in analytics.transactions">
+                                    <td>{{txn.txn_id}}</a></td>
+                                    <td>{{txn.gateway_name}}</td>
+                                    <td>{{txn.bank_name}}</td>
+                                    <td>{{txn.txn_amount}}</td>
+                                    <td>{{txn.status}}</td>
+                                    <td>{{txn.resp_code }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </md-data-table-container>
+                </md-card>
+            </md-content>
+        </div>
+        <div id="demo">
+            <md-content layout="column" flex>
+                
+            </md-content>
+        </div>
+    </md-tab>
+    <md-tab label="Generate Voucher">
+        <div id="demo">
+            <md-content layout="column" flex>
+                <md-card layout="column" flex>
+                    <md-data-table-toolbar>
+                        <md-icon md-svg-icon="./assets/img/material-design-icons/svg/mark2.svg"></md-icon>
+                        <form flex>
+                            <md-input-container>
+                                <label>Insert Booking ID like DEKA304B231170</label>
+                                <input type="text" placeholder="DEKA304B231170" ng-model="voucher.id" ng-change="removeVoucher()">
+                            </md-input-container>
+                        </form>
+                        <md-button class="md-raised md-success" aria-label="Favorite" style="margin-right:5px;" ng-click="getVoucher()">
+                            Generate
+                        </md-button>
+                        
+                    </md-data-table-toolbar>
+                    
+                </md-card>
+                <md-card layout="column" ng-show="voucher.booking_exists" flex>
+                    <iframe id="frame" ng-src="{{ current_voucher_url }}" class="md-card-image" height="1000"></iframe>
+                    <md-card-content>
+                        <md-data-table-toolbar>
+                        <div layout="row">
+                            
+                            <md-checkbox ng-model="voucher.show_branding" aria-label="Show Ozonet Branding" flex=50 ng-change="getVoucher()">
+                                Show Ozonet Branding
+                            </md-checkbox>
+                            <md-checkbox ng-model="voucher.show_payment_details" aria-label="Show Payment Details" flex=50 ng-change="getVoucher()">
+                                Show Payment Details
+                            </md-checkbox>
+                        </div>
+                    </md-data-table-toolbar>
+                        <p>
+                          Send mail to {{voucher.email}}
+                        </p>
+                      </md-card-content>
+                      <md-card-actions layout="row" layout-align="end center">
+                          <md-button ng-click="mailVoucher()">Mail</md-button>
+                          <a href="{{voucher.pdf}}" target="_blank"><md-button>Download</md-button></a>
+                      </md-card-actions>
+                </md-card>
+            </md-content>
+        </div>
+    </md-tab>
+</md-tabs>
+
